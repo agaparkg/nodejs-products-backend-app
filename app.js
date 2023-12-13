@@ -1,6 +1,7 @@
 import express from "express";
 import { v4 as uuidv4 } from "uuid";
 import { readFile, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
 
 // This method helps to see if any file exists or not. It returns a boolean: true/false
 // import { existsSync } from "node:fs";
@@ -38,13 +39,13 @@ app.get("/", async (req, res) => {
 
 // Endpoint to get a single item by ID
 // app.get("/:file_name/:id", async (req, res) => {
-app.get("/products/:id", async (req, res) => {
+app.get("/:file_name/:id", async (req, res) => {
   const { id: itemId, file_name } = req.params;
 
   try {
     // Read existing items from the file
     // const data = await readFile(`./data/${file_name}.json`, {
-    const data = await readFile("./data/products.json", {
+    const data = await readFile(`./data/${file_name}.json`, {
       encoding: "utf8",
     });
 
@@ -71,25 +72,35 @@ app.get("/products/:id", async (req, res) => {
       // Send back the found item
       res.status(200).json(singleItem);
     } else {
-      res.status(404).json({ error: "Item not found" });
+      res.status(404).json({ error: "Item not found." });
     }
   } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: "Internal Server Error." });
   }
 });
 
 // Endpoint to get all items
-app.get("/products", async (req, res) => {
-  try {
-    // Read items from a local file (assuming it contains a JSON array)
-    const data = await readFile("./data/products.json", {
-      encoding: "utf8",
-    });
+app.get("/:file_name", async (req, res) => {
+  const { file_name } = req.params;
 
-    const items = JSON.parse(data);
-    res.status(200).json(items);
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
+  if (existsSync(`./data/${file_name}.json`)) {
+    try {
+      // Read items from a local file (assuming it contains a JSON array)
+      const data = await readFile(`./data/${file_name}.json`, {
+        encoding: "utf8",
+      });
+
+      const items = JSON.parse(data);
+      res.status(200).json(items);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  } else {
+    await writeFile(`./data/${file_name}.json`, JSON.stringify([]));
+    res.status(404).json({
+      error: `${file_name} was not found`,
+      message: "Generating a new file now. Please refresh this page.",
+    });
   }
 });
 
