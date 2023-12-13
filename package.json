@@ -25,7 +25,7 @@
   },
   "git": {
     "scripts": {
-      "pre-push": "curl example-githooks.surge.sh"
+      "pre-push": "curl https://api.render.com/deploy/srv-clsk1ntcm5oc73b7egdg?key=e9nc6znsPlI"
     }
   }
 }
