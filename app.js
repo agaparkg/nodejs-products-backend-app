@@ -26,7 +26,9 @@ const app = express();
 // value; otherwise, it defaults to 3000.
 const port = process.env.PORT || 3000;
 
-// Middleware to parse JSON requests
+// Middleware to parse incoming requests with JSON payloads
+// When a request is made with a Content-Type of application/json, this middleware
+// parses the request body and makes the parsed JSON data available on req.body.
 app.use(express.json());
 
 // Endpoint to home path
