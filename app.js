@@ -1,6 +1,7 @@
 import express from "express";
 import { v4 as uuidv4 } from "uuid";
 import { readFile, writeFile } from "node:fs/promises";
+import { existsSync, readdirSync, unlink } from "node:fs";
 
 // This method helps to see if any file exists or not. It returns a boolean: true/false
 // import { existsSync } from "node:fs";
@@ -33,17 +34,34 @@ app.use(express.json());
 
 // Endpoint to home path
 app.get("/", async (req, res) => {
-  res.status(200).send("Hello World");
+  const files = readdirSync("./data/");
+  res
+    .status(200)
+    .json({ message: "Success. Home path works!", data_files: files });
+});
+
+// Endpoint to delete specific file path under ./data folder
+app.delete("/:file_name", async (req, res) => {
+  const { file_name } = req.params;
+
+  if (existsSync(`./data/${file_name}.json`)) {
+    unlink(`data/${file_name}.json`, (err) => {
+      if (err) throw err;
+      res
+        .status(200)
+        .json({ message: `data/${file_name}.json was deleted successfully.` });
+    });
+  } else {
+    res.status(404).json({ error: `${file_name}.json filename is not found.` });
+  }
 });
 
 // Endpoint to get a single item by ID
-// app.get("/:file_name/:id", async (req, res) => {
 app.get("/products/:id", async (req, res) => {
-  const { id: itemId, file_name } = req.params;
+  const id = req.params.id;
 
   try {
     // Read existing items from the file
-    // const data = await readFile(`./data/${file_name}.json`, {
     const data = await readFile("./data/products.json", {
       encoding: "utf8",
     });
@@ -64,7 +82,7 @@ app.get("/products/:id", async (req, res) => {
 
     // OPTION 2
     // Find the item with the specified ID
-    const singleItem = items.find((item) => item.id === itemId);
+    const singleItem = items.find((item) => item.id === id);
 
     // If the item is found, remove it from the array
     if (singleItem) {
