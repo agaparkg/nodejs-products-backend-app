@@ -1,7 +1,6 @@
 import express from "express";
 import { v4 as uuidv4 } from "uuid";
 import { readFile, writeFile } from "node:fs/promises";
-import { existsSync, readdirSync, unlink } from "node:fs";
 
 // This method helps to see if any file exists or not. It returns a boolean: true/false
 // import { existsSync } from "node:fs";
@@ -34,26 +33,7 @@ app.use(express.json());
 
 // Endpoint to home path
 app.get("/", async (req, res) => {
-  const files = readdirSync("./data/");
-  res
-    .status(200)
-    .json({ message: "Success. Home path works!", data_files: files });
-});
-
-// Endpoint to delete specific file path under ./data folder
-app.delete("/:file_name", async (req, res) => {
-  const { file_name } = req.params;
-
-  if (existsSync(`./data/${file_name}.json`)) {
-    unlink(`data/${file_name}.json`, (err) => {
-      if (err) throw err;
-      res
-        .status(200)
-        .json({ message: `data/${file_name}.json was deleted successfully.` });
-    });
-  } else {
-    res.status(404).json({ error: `${file_name}.json filename is not found.` });
-  }
+  res.status(200).json({ message: "Success. Home path works!" });
 });
 
 // Endpoint to get a single item by ID

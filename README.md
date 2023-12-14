@@ -1,12 +1,11 @@
-/ - home path  
+/ - Home page  
 GET - /products - All products  
 GET - /products/:id - Single product  
 POST - /products (req.body) - Add new product  
 PATCH - /products/:id (req.body & req.params.id) - Update a product  
 DELETE - /products/:id (req.params.id) - Delete a product
-DELETE - /:file_name (req.params.file_name) - Delete specific file path under ./data folder
 
-Sample Data:
+Sample Data - GET method:
 
 ```json
 [
@@ -22,15 +21,12 @@ Sample Data:
 ]
 ```
 
-This nodejs app has a feature of creating an endpoint if it doesn't exist
-For instance, /products is there by default and contains some data, but if
-user hits /users or /cars, these routes do not exist, and we will see this
-as a result. However, since it doesn't exist, backend will create it dynamically.
-So, filename with that route will be created in the server.
+Sample Data - POST method:
 
 ```
 {
-  "error": "users was not found",
-  "message": "Generating a new file now. Please refresh this page."
+    "name": "Bluetooth Headphones",
+    "description": "Bluetooth technology",
+    "price": 100.00
 }
 ```
